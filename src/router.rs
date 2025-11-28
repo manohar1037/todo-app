@@ -3,15 +3,15 @@ use axum::{
     response::IntoResponse,
     routing::{get, post},
 };
+use tower_http::normalize_path::NormalizePathLayer;
 use std::sync::Arc;
 
 use crate::{
-    auth::require_basic_auth,
-    handlers::{create_task, delete_task, get_task, get_tasks, update_task},
-    state::AppState,
+    auth::require_basic_auth, handlers::{create_task, delete_task, get_task, get_tasks, update_task}, helper::create_header, state::AppState
 };
 
 pub fn create_router(state: Arc<AppState>) -> Router {
+   
     let tasks_router = Router::new()
         .route("/tasks", post(create_task).get(get_tasks))
         .route(
@@ -30,5 +30,6 @@ pub fn create_router(state: Arc<AppState>) -> Router {
 }
 
 async fn ping() -> impl IntoResponse {
-    "Hello"
+    let headers = create_header();
+    (headers,"hello")
 }

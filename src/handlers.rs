@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use crate::{
     error::AppError,
+    helper::create_header,
     model::{CreateTask, UpdateTask},
     state::AppState,
     taskrepo::{
@@ -17,8 +18,7 @@ use axum::{
 
 pub async fn get_tasks(State(state): State<Arc<AppState>>) -> Result<impl IntoResponse, AppError> {
     let tasks = fetch_all_tasks(state).await?;
-
-    Ok((StatusCode::OK, Json(tasks)))
+    Ok((StatusCode::OK,Json(tasks)))
 }
 
 pub async fn get_task(
@@ -38,7 +38,6 @@ pub async fn create_task(
     Json(payload): Json<CreateTask>,
 ) -> Result<impl IntoResponse, AppError> {
     let task = create_task_service(state, username, payload).await?;
-
     Ok((StatusCode::OK, Json(task)).into_response())
 }
 
