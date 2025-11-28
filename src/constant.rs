@@ -1,0 +1,7 @@
+pub const MONGODB_DB_URI: &str = "MONGO_DB_URI";
+pub const MONGODB_DB: &str = "MONGODB_DB";
+pub const MONGODB_TASKS_COLLECTION: &str = "MONGODB_TASKS_COLLECTION";
+pub const MONGODB_TASKS_LOG_COLLECTION: &str = "MONGODB_TASKS_LOGS_COLLECTION";
+pub const BASIC_AUTH_USER: &str = "BASIC_AUTH_USER";
+pub const BASIC_AUTH_PASS: &str = "BASIC_AUTH_PASS";
+pub const PORT: &str = "PORT";
