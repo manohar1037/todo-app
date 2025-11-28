@@ -1,12 +1,25 @@
-use axum::http::{self, HeaderMap, HeaderValue, Request};
+use axum::http::{self, HeaderMap, HeaderValue, Request, Uri};
 
-pub fn create_header()->HeaderMap{
+pub fn create_header() -> HeaderMap {
     let mut headers = HeaderMap::new();
     headers.insert("myheader", HeaderValue::from_static("myvalue"));
     headers
 }
 
+/// Split on '/', drop empty segments and rejoin so repeated slashes collapse.
+fn normalize_path(path: &str) -> String {
+    if path == "/" {
+        return "/".to_string();
+    }
 
+    let segs: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
+
+    if segs.is_empty() {
+        return "/".to_string();
+    }
+
+    format!("/{}", segs.join("/"))
+}
 
 pub fn rewrite_request_uri<B>(mut req: Request<B>) -> Request<B> {
     use http::uri::PathAndQuery;
@@ -14,19 +27,26 @@ pub fn rewrite_request_uri<B>(mut req: Request<B>) -> Request<B> {
     if let Some(pq) = req.uri().path_and_query() {
         let path = pq.path();
 
-        if path.len() > 1 && path.ends_with('/') {
-            let new_path = &path[..path.len() - 1];
+        let needs_normalize = path.contains("//") || (path.len() > 1 && path.ends_with('/'));
 
-            let new_pq = if let Some(q) = pq.query() {
-                PathAndQuery::from_maybe_shared(format!("{new_path}?{q}")).unwrap()
-            } else {
-                PathAndQuery::from_maybe_shared(new_path.to_string()).unwrap()
+        if needs_normalize {
+            let new_path = normalize_path(path);
+
+            let new_pq_string = match pq.query() {
+                Some(q) => format!("{new_path}?{q}"),
+                None => new_path.clone(),
             };
-            let mut parts = req.uri().clone().into_parts();
-            parts.path_and_query = Some(new_pq);
-            let new_uri = http::Uri::from_parts(parts).expect("valid uri");
-            *req.uri_mut() = new_uri;
+
+            if let Ok(new_pq) = PathAndQuery::from_maybe_shared(new_pq_string) {
+                let mut parts = req.uri().clone().into_parts();
+                parts.path_and_query = Some(new_pq);
+
+                if let Ok(new_uri) = Uri::from_parts(parts) {
+                    *req.uri_mut() = new_uri;
+                }
+            }
         }
     }
+
     req
 }

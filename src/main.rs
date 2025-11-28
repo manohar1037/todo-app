@@ -14,7 +14,7 @@ use tokio::net::TcpListener;
 
 
 use crate::{helper::rewrite_request_uri, router::create_router, state::AppState};
-use axum::{ServiceExt, extract::Request, http};
+use axum::{ServiceExt};
 use tower::Layer;
 
 #[tokio::main]

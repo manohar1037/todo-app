@@ -2,7 +2,6 @@ use std::sync::Arc;
 
 use crate::{
     error::AppError,
-    helper::create_header,
     model::{CreateTask, UpdateTask},
     state::AppState,
     taskrepo::{

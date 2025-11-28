@@ -3,7 +3,6 @@ use axum::{
     response::IntoResponse,
     routing::{get, post},
 };
-use tower_http::normalize_path::NormalizePathLayer;
 use std::sync::Arc;
 
 use crate::{
