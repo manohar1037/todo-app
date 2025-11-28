@@ -14,8 +14,8 @@ pub struct Config {
 impl Config {
     pub fn new()-> Self {
         dotenv().ok();
-        let basic_user = env::var(BASIC_AUTH_USER).unwrap_or_else(|_| "admin".into());
-        let basic_pass = env::var(BASIC_AUTH_PASS).unwrap_or_else(|_| "changeme".into());
+        let basic_user = env::var(BASIC_AUTH_USER).unwrap_or_default();
+        let basic_pass = env::var(BASIC_AUTH_PASS).unwrap_or_default();
         let port = env::var(PORT)
             .ok()
             .and_then(|s| s.parse::<u16>().ok())

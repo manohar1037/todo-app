@@ -7,7 +7,6 @@ mod handlers;
 mod model;
 mod router;
 mod state;
-mod tasklog;
 mod taskrepo;
 use std::sync::Arc;
 use tokio::net::TcpListener;
